@@ -12,6 +12,13 @@ jobs:
           dir
 #      - name: Add credentials for font awsome
 #        run: (npm config set "@fortawesome:registry" https://npm.fontawesome.com/ && npm config set "//npm.fontawesome.com/:_authToken" 63E92C52-E0FF-4A82-80D4-E89FBB22C1B2)
+      - name: Setup Windows 10 SDK Action
+        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.11
+        with:
+          sdk-version: 17763
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: NPN install
         run:  |
           cd MiddlemanElectronSampleApp/Electron
