@@ -1,0 +1,53 @@
+name: CI
+on:
+  push
+jobs:
+  crosshairx-electron-build:
+    runs-on: ubuntu-latest
+    container:
+      image: electronuserland/builder:wine
+      env:
+        NODE_ENV: development
+      ports:
+        - 80
+      volumes:
+        - DataStreamerSamples:/DataStreamerSamples
+      options: --cpus 1 --user root
+    steps:
+      - name: Check for dockerenv file
+        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Investigate
+        run: |
+          pwd
+          whoami
+          ls -la
+          id -u
+#      - name: Add credentials for font awsome
+#        run: (npm config set "@fortawesome:registry" https://npm.fontawesome.com/ && npm config set "//npm.fontawesome.com/:_authToken" 63E92C52-E0FF-4A82-80D4-E89FBB22C1B2)
+      - name: NPN install
+        run:  |
+          cd MiddlemanElectronSampleApp/Electron
+          ls -la
+          npm install
+      - name: Update angular
+        run: npm install @angular/fire
+      - name: Update fontawsome
+        run: npm install @fortawesome/fontawesome-svg-core
+      - name: Build iOS
+        run: CI=false ionic cap copy ios
+      - name: Zip artifact for deployment
+        uses: TheDoctor0/zip-release@0.7.1
+        with:
+          type: 'tar'
+          exclusions: '*.tar.gz'
+          filename: svgtracepro-compiled.tar.gz
+#      - name: Upload Artifacts
+#        uses: actions/upload-artifact@v3
+#        if: always()
+#        with:
+#          name: svgtracepro-compiled
+#          path: |
+#            ./svgtracepro-compiled.tar.gz
+#          retention-days: 5
